@@ -1,6 +1,7 @@
 import csv
 from hoeffdingtree import *
 
+
 def open_dataset(filename, class_index, probe_instances=100):
     """ Open and initialize a dataset in CSV format.
     The CSV file needs to have a header row, from where the attribute names will be read, and a set
@@ -18,7 +19,7 @@ def open_dataset(filename, class_index, probe_instances=100):
     if not filename.endswith('.csv'):
         raise TypeError(
             'Unable to open \'{0}\'. Only datasets in CSV format are supported.'
-            .format(filename))
+                .format(filename))
     with open(filename) as f:
         fr = csv.reader(f)
         headers = next(fr)
@@ -42,7 +43,7 @@ def open_dataset(filename, class_index, probe_instances=100):
                         else:
                             raise ValueError(
                                 'Attribute {0} has both Numeric and Nominal values.'
-                                .format(headers[j]))
+                                    .format(headers[j]))
         # Tried to probe more instances than there are in the dataset file
         except StopIteration:
             pass
@@ -60,14 +61,15 @@ def open_dataset(filename, class_index, probe_instances=100):
             if attributes[i].type() == 'Nominal':
                 inst[i] = int(attributes[i].index_of_value(str(inst[i])))
         dataset.add(Instance(att_values=inst))
-    
+
     return dataset
+
 
 def main():
     filename = 'dataset_file.csv'
     dataset = open_dataset(filename, 1, probe_instances=10000)
     vfdt = HoeffdingTree()
-    
+
     # Set some of the algorithm parameters
     vfdt.set_grace_period(50)
     vfdt.set_hoeffding_tie_threshold(0.05)
@@ -77,7 +79,7 @@ def main():
     vfdt.set_minimum_fraction_of_weight_info_gain(0.01)
 
     vfdt.build_classifier(dataset)
-    
+
     # Simulate a data stream
     with open(filename) as f:
         stream = csv.reader(f)
@@ -88,7 +90,7 @@ def main():
             for i in range(len(inst_values)):
                 if dataset.attribute(index=i).type() == 'Nominal':
                     inst_values[i] = int(dataset.attribute(index=i)
-                        .index_of_value(str(inst_values[i])))
+                                         .index_of_value(str(inst_values[i])))
                 else:
                     inst_values[i] = float(inst_values[i])
             new_instance = Instance(att_values=inst_values)
@@ -96,6 +98,6 @@ def main():
             vfdt.update_classifier(new_instance)
     print(vfdt)
 
+
 if __name__ == '__main__':
     main()
-
